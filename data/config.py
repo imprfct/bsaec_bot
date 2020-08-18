@@ -1,14 +1,15 @@
 import os
 
-from dotenv import load_dotenv
+# === Позже нужно добавить функцию внесения в environ токена бота и моего ид ===
+# BOT_TOKEN = os.getenv("BSAEC_BOT_TOKEN")
 
-load_dotenv()
+# admins = [
+#     os.getenv("ADMIN_ID"),
+# ]
 
-BOT_TOKEN = str(os.getenv("BOT_TOKEN"))
+BOT_TOKEN = "1339117782:AAGnpZZZqY8HQ6iY4IZEHevdULzThuWqPY4"
 
-admins = [
-    os.getenv("ADMIN_ID"),
-]
+admins = ["504242356"]
 
 ip = os.getenv("ip")
 
