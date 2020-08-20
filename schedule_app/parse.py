@@ -1,4 +1,5 @@
-import config  # Файл с настройками парсера
+from . import conf  # Файл с настройками парсера
+
 import requests  # Библиотека для обращения к серверу, в нашем случае за HTML-разметкой
 import bs4 as bs  # Модуль для парсинга HTML
 import pandas as pd  # Библиотка для работы с информацией в виде ДатаФреймов (DataFrame)
@@ -26,7 +27,7 @@ class PageParser:
         # Создаем фейковые метаданные
         self.schedule = list()  # Создаем пустой список, который будет хранить в себе расписания по порядку
         # Получаем HTML-код от URL
-        page = requests.get(url, headers=config.headers).text
+        page = requests.get(url, headers=conf.headers).text
 
         # --- Парсинг страницы ---
         self.soup = bs.BeautifulSoup(page, features='lxml')  # Преобразуем HTML в объект BeautifulSoup
@@ -217,11 +218,11 @@ class PageParser:
                 next_split_row = self.rows[i + 1].find_all("td")  # Получаем столбцы следующей строки
 
                 # Если попадаем на строку вида -, Группа1, Группа2 и в след. строке находится расписание
-                if split_row[0].text in config.empty_strings and next_split_row[0].text not in config.empty_strings:
+                if split_row[0].text in conf.empty_strings and next_split_row[0].text not in conf.empty_strings:
                     # Добавляем группу в список всех групп
-                    if len(split_row[1].text) > 0 and split_row[1].text not in config.empty_strings:
+                    if len(split_row[1].text) > 0 and split_row[1].text not in conf.empty_strings:
                         self.groups.append(split_row[1].text)
-                    if len(split_row[2].text) > 0 and split_row[2].text not in config.empty_strings:
+                    if len(split_row[2].text) > 0 and split_row[2].text not in conf.empty_strings:
                         self.groups.append(split_row[2].text)
             return self.groups  # Возвращаем список всех групп
 
@@ -237,11 +238,11 @@ class PageParser:
 
                 # Если попадаем на строку вида -, Группа1, Кабинет1, Группа2, Кабинет2 и в следующей строке находится
                 # расписание
-                if split_row[0].text in config.empty_strings and next_split_row[0].text not in config.empty_strings:
+                if split_row[0].text in conf.empty_strings and next_split_row[0].text not in conf.empty_strings:
                     # Добавляем группу в список всех групп в формате без номера курса
-                    if len(split_row[1].text) > 0 and split_row[1].text not in config.empty_strings:
+                    if len(split_row[1].text) > 0 and split_row[1].text not in conf.empty_strings:
                         self.groups.append(split_row[1].text.split(' ')[0])
-                    if len(split_row[3].text) > 0 and split_row[3].text not in config.empty_strings:
+                    if len(split_row[3].text) > 0 and split_row[3].text not in conf.empty_strings:
                         self.groups.append(split_row[3].text.split(' ')[0])
 
             return self.groups  # Возвращаем список всех групп
@@ -257,7 +258,7 @@ class PageParser:
 
         # Удаляем группы с пустыми названиями
         for group in self.groups:
-            if group in config.empty_strings:
+            if group in conf.empty_strings:
                 self.groups.remove(group)
 
         # Удаляем пустые строки в датафреймах
@@ -265,7 +266,7 @@ class PageParser:
             # Перебираем все предметы и индексы строк
             for subject, hour in zip(schedule["Предмет"], schedule.index):
                 # Если длина строки меньше или равна двойки, то в ней нет данных.
-                if len(subject) <= 2 or subject == "  /  " or (subject in config.empty_strings):
+                if len(subject) <= 2 or subject == "  /  " or (subject in conf.empty_strings):
                     schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
 
         # Удаляем разрывы строк в расписниях
@@ -301,7 +302,7 @@ class HomePagesParser:
         Конструктор для класса HomePagesParser
         """
 
-        self.urls = config.urls  # Добавляем в класс поле urls для хранения ссылок, которые нам передали
+        self.urls = conf.urls  # Добавляем в класс поле urls для хранения ссылок, которые нам передали
         self.content = {"date": [], "href": []}  # Структура для хранения дат расписаний и ссылки на расписания
         self.content = self.get_date_and_links()  # При создании получаем эту структуру заполненной
 
@@ -313,7 +314,7 @@ class HomePagesParser:
         dates_and_links = {"date": [], "href": []}  # Структура для хранения дат расписаний и ссылки на расписания
         # Перебираем все ссылки среди тех, которые нам передали
         for url in self.urls:
-            with requests.get(url, headers=config.headers) as page:
+            with requests.get(url, headers=conf.headers) as page:
                 soup = bs.BeautifulSoup(page.text, features='lxml')  # Формируем объект BeautifulSoup
 
                 articles = soup.find_all('article')  # Находим все тэги с расписаниями
@@ -339,7 +340,7 @@ class HomePagesParser:
                             # Пример такой ошибки строка - `Расписание на 11 июня 2020`
                             try:
                                 dates_and_links["date"].append((datetime.strptime(split_a[2] + "." + 
-                                                config.monthes[split_a[3]] + "." + split_a[4], "%d.%B.%Y")))
+                                                conf.monthes[split_a[3]] + "." + split_a[4], "%d.%B.%Y")))
                             except KeyError:
                                 # Пример - Расписание занятий на 30.06.2020г. (вторник)
                                 dates_and_links["date"].append(datetime.strptime(split_a[3][:-2], "%d.%m.%Y"))

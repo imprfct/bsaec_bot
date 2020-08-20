@@ -10,7 +10,7 @@ empty_strings = ["", " ", " ", "\xa0", '\xa0\n\xa0', " "]
 
 from os import getcwd
 # Путь, где находится wkhtmltoimage
-path_wkthmltoimage = f'{getcwd()}/wkhtmltopdf/bin/wkhtmltoimage.exe'
+path_wkthmltoimage = f'{getcwd()}/schedule_app/wkhtmltopdf/bin/wkhtmltoimage.exe'
 
 folder_name = "Расписание"
 queries_folder_name = "Запросы"

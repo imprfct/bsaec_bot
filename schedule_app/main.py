@@ -1,6 +1,6 @@
-import config  # Файл настроек для данной программы
-import parse  # Мой модуль для парснга HTML-страниц с расписанием БГАЭК
-import dfToImage    # Модуль для преобразования датафрейма в картинку
+from . import conf  # Файл настроек для данной программы
+from . import parse  # Мой модуль для парснга HTML-страниц с расписанием БГАЭК
+from . import dfToImage    # Модуль для преобразования датафрейма в картинку
 
 from os import makedirs, path, listdir, getcwd  # Работа с папками
 from datetime import datetime, timedelta   # Модуль для работы с датой
@@ -38,7 +38,7 @@ def download_day(dates_and_links, year, month, day):
 
     # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
-    path = "data/" + year + "/" + config.monthes[month] + "/" + day
+    path = "data/Schedule " + year + "/" + conf.monthes[month] + "/" + day
     
     # Находим ссылку по имеющейся дате
     # У нас будет 2 ссылки - одна для бух.отдела и строит.отдела
@@ -118,13 +118,11 @@ def download_day_for_group(url, path, datestr, group):
     return False
 
 
-def download_schedule():
-    global previous_date_and_links
-
+def download_schedule(previous_date_and_links: dict()):
     home_parser = parse.HomePagesParser()  # создания объекта для парсинга домашних страниц
     date_and_links = home_parser.get_date_and_links()  # Получаем даты и ссылки на страницы расписания по дням
     preloaded_days = get_days_dict(date_and_links)
-    folderName = getcwd() + "/" + config.folder_name
+    folderName = getcwd() + "/" + conf.folder_name
 
     # Проходим по всем датам в preloaded_days,
     # если предыдущий объект дата-ссылка отличается от нынешнего,
@@ -140,13 +138,16 @@ def download_schedule():
                         previous_date_and_links = date_and_links
     
 
-
-if __name__ == '__main__':
+def start_schedule_app():
     print("Запуск парсера...")
     # Используется для проверки, появилось ли новое расписание
     previous_date_and_links = dict()
-
+    
     while True:
-        download_schedule()
+        download_schedule(previous_date_and_links)
 
         sleep(5) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов
+
+
+if __name__ == '__main__':
+    start_schedule_app()

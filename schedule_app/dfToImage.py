@@ -1,5 +1,5 @@
 import imgkit
-from config import path_wkthmltoimage
+from .conf import path_wkthmltoimage
 from sys import platform
 
 css = """<style type="text/css">
