@@ -35,8 +35,10 @@ def download_day(dates_and_links, year, month, day):
     """
 
     print(f"Начинаю загрузку расписания на {day}-{month}-{year}")
+
+    # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
-    path = config.folder_name + " " + year + "/" + month + "/" + day
+    path = "data/" + year + "/" + config.monthes[month] + "/" + day
     
     # Находим ссылку по имеющейся дате
     # У нас будет 2 ссылки - одна для бух.отдела и строит.отдела
@@ -147,5 +149,4 @@ if __name__ == '__main__':
     while True:
         download_schedule()
 
-        sleep(1) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов
-        
+        sleep(5) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов

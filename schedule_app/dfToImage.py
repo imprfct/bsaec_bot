@@ -1,5 +1,6 @@
 import imgkit
 from config import path_wkthmltoimage
+from sys import platform
 
 css = """<style type="text/css">
 table.dataframe {
@@ -42,27 +43,28 @@ empty_string = """    <tr>
 
 
 def get_image(data, path):
-    """
-    Функция для сохранения картинки из данного датафрейма
-    в заданную директорию
-    data : pandas.DataFrame()
-    path : Windows directory
-    """
-    
-    html = data.to_html(bold_rows=False).replace(empty_string, '')
+	"""
+	Функция для сохранения картинки из данного датафрейма
+	в заданную директорию
+	data : pandas.DataFrame()
+	path : Windows directory
+	"""
+	html = css + data.to_html(bold_rows=False).replace(empty_string, '')
 
-    text_file = open("process.html", "w", encoding="utf-8")
-    text_file.write(css)
-    text_file.write(html)
-    text_file.close()
-
-
-    options = {"format": "jpg",
-               "encoding": "UTF-8",
+	options = {"format": "jpg",
+               "encoding": "utf-8",
                "quiet": "",
                "width": 200}
-    config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
+	config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
 
-    path = path.replace(" ", "")
-    print(path)
-    imgkit.from_file("process.html", path+".jpg", options=options, config=config)
+	# В зависимости от платформы необходимо правильно преобразовать путь
+	# А также по разному использовать imgkit
+
+	# Если скрипт запущен на windows
+	if platform == "win32":
+		path = (path + ".jpg").encode("utf-8")
+		imgkit.from_string(css+html, path, options=options, config=config)
+	# Если скрипт запущен на linux
+	elif platform.startswith("linux2"):
+		path = (path + ".jpg").encode("utf-8")
+		imgkit.from_string(css+html, path, options=options)

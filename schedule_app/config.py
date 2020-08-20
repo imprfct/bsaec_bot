@@ -12,7 +12,7 @@ from os import getcwd
 # Путь, где находится wkhtmltoimage
 path_wkthmltoimage = f'{getcwd()}/wkhtmltopdf/bin/wkhtmltoimage.exe'
 
-folder_name = "Raspisanie"
+folder_name = "Расписание"
 queries_folder_name = "Запросы"
 
 weekdays = {
@@ -27,18 +27,18 @@ weekdays = {
 
 # для получения английского эквивалента из русского слова
 monthes = {
-    "января": "January",
-    "февраля": "February",
-    "марта": "March",
-    "апреля": "April",
-    "мая": "May",
-    "июня": "June",
-    "июля": "July",
-    "августа": "August",
-    "сентября": "September",
-    "октября": "October",
-    "ноября": "November",
-    "декабря": "December"
+    "1": "Январь",
+    "2": "Февраль",
+    "3": "Март",
+    "4": "Апрель",
+    "5": "Май",
+    "6": "Июнь",
+    "7": "Июль",
+    "8": "Август",
+    "9": "Сентябрь",
+    "10": "Октябрь",
+    "11": "Ноябрь",
+    "12": "Декабрь"
 }
 
 # Метаданные для обхода DDOS-блокировки
