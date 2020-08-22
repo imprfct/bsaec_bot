@@ -20,11 +20,11 @@ def parse_page(_url, _path):
     groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
     schedules = parser.get_schedule()  # Получаем все расписания со страницы, которую нам передали
 
-    makedirs(_path, exist_ok=True)  # Создаем все необходимые папки по пути, который нам передали аргументом
+    makedirs(conf.folder_path, exist_ok=True)  # Создаем все необходимые папки по пути, который нам передали аргументом
 
     # Попарно перебираем все группы и расписания
     for group, schedule in zip(groups, schedules):
-        dfToImage.get_image(schedule, path=_path+"/"+group)
+        dfToImage.get_image(schedule, path=_path+"_"+group)
 
 
 def download_day(dates_and_links, year, month, day):
@@ -35,7 +35,7 @@ def download_day(dates_and_links, year, month, day):
     """
     # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
-    path = "data/Schedule " + year + "/" + conf.monthes[month] + "/" + day
+    path = "data/Schedule/" + year + "_" + conf.monthes[month] + "_" + day
     
     # Находим ссылку по имеющейся дате
     # У нас будет 2 ссылки - одна для бух.отдела и строит.отдела
@@ -115,7 +115,7 @@ def download_schedule(previous_date_and_links: dict()):
     home_parser = parse.HomePagesParser()  # создания объекта для парсинга домашних страниц
     date_and_links = home_parser.get_date_and_links()  # Получаем даты и ссылки на страницы расписания по дням
     preloaded_days = get_days_dict(date_and_links)
-    folderName = getcwd() + "/" + conf.folder_name
+    folderName = getcwd() + "/" + conf.folder_path
 
     # Проходим по всем датам в preloaded_days,
     # если предыдущий объект дата-ссылка отличается от нынешнего,

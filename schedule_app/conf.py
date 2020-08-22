@@ -12,7 +12,7 @@ from os import getcwd
 # Путь, где находится wkhtmltoimage
 path_wkthmltoimage = f'{getcwd()}/schedule_app/wkhtmltopdf/bin/wkhtmltoimage.exe'
 
-folder_name = "Расписание"
+folder_path= "./data/Schedule"
 queries_folder_name = "Запросы"
 
 weekdays = {

@@ -54,8 +54,9 @@ def get_image(data, path):
 	options = {"format": "jpg",
                "encoding": "utf-8",
                "quiet": "",
+               "quality": 99,
                "log-level": "none",
-               "width": 300}
+               "width": 270}
 	config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
 
 	# В зависимости от платформы необходимо правильно преобразовать путь
