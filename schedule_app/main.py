@@ -33,9 +33,6 @@ def download_day(dates_and_links, year, month, day):
     В случае, если расписание не найдено, то функция ничего не возвращает
     Иначе она скачивает расписание по заданному пути
     """
-
-    print(f"Начинаю загрузку расписания на {day}-{month}-{year}")
-
     # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
     path = "data/Schedule " + year + "/" + conf.monthes[month] + "/" + day
@@ -54,8 +51,6 @@ def download_day(dates_and_links, year, month, day):
         # Условная ссылка для строительного отделения
         link1 = dates_and_links['href'][indexes[0]]
         parse_page(_url=link1, _path=path)  # Парсим страницы все страницы из словаря
-        # Логируем результат
-        print(f"Расписание на {day}-{month}-{year} успешно загружено")
     else:
         # Условная ссылка для строительного отделения
         link1 = dates_and_links['href'][indexes[0]]
@@ -64,8 +59,6 @@ def download_day(dates_and_links, year, month, day):
 
         parse_page(_url=link1, _path=path)  # Парсим страницы все страницы из словаря
         parse_page(_url=link2, _path=path)  # Парсим страницы все страницы из словаря
-        # Логируем результат
-        print(f"Расписание на {day}-{month}-{year} успешно загружено")
 
 
 def get_days_dict(date_and_links):
@@ -147,6 +140,8 @@ def start_schedule_app():
         download_schedule(previous_date_and_links)
 
         sleep(5) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов
+    
+    return True
 
 
 if __name__ == '__main__':
