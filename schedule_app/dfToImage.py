@@ -2,6 +2,10 @@ import imgkit
 from .conf import path_wkthmltoimage
 from sys import platform
 
+from upload_schedule import upload_and_send_schedule
+from loader import bot, event_loop
+import asyncio
+
 css = """<style type="text/css">
 table.dataframe {
   font-family: Tahoma, Geneva, sans-serif;
@@ -61,12 +65,21 @@ def get_image(data, path):
 
 	# В зависимости от платформы необходимо правильно преобразовать путь
 	# А также по разному использовать imgkit
+	try:
+		# Если скрипт запущен на windows
+		if platform == "win32":
+			path = (path + ".jpg").encode("utf-8")
+			imgkit.from_string(css+html, path, options=options, config=config)
+		# Если скрипт запущен на linux
+		elif platform.startswith("linux2"):
+			path = (path + ".jpg").encode("utf-8")
+			imgkit.from_string(css+html, path, options=options)
+		
+		path = path.decode("utf-8")
 
-	# Если скрипт запущен на windows
-	if platform == "win32":
-		path = (path + ".jpg").encode("utf-8")
-		imgkit.from_string(css+html, path, options=options, config=config)
-	# Если скрипт запущен на linux
-	elif platform.startswith("linux2"):
-		path = (path + ".jpg").encode("utf-8")
-		imgkit.from_string(css+html, path, options=options)
+		# Добавляем новый файл в бд и отправляем пользователям по группам
+		asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo'), loop=event_loop)
+			
+
+	except Exception as exc:
+		print(f"exc: {exc}, path: {path}")

@@ -1,5 +1,3 @@
-import asyncio
-
 from schedule_app import main
 from threading import Thread
 

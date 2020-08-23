@@ -24,7 +24,10 @@ def parse_page(_url, _path):
 
     # Попарно перебираем все группы и расписания
     for group, schedule in zip(groups, schedules):
-        dfToImage.get_image(schedule, path=_path+"_"+group)
+        if path.exists(f"{_path}_{group}.jpg"):
+            continue
+        else:
+            dfToImage.get_image(schedule, path=_path+"_"+group)
 
 
 def download_day(dates_and_links, year, month, day):
@@ -35,7 +38,7 @@ def download_day(dates_and_links, year, month, day):
     """
     # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
-    path = "data/Schedule/" + year + "_" + conf.monthes[month] + "_" + day
+    path = "data/Schedule/" + year + "_" + month + "_" + day
     
     # Находим ссылку по имеющейся дате
     # У нас будет 2 ссылки - одна для бух.отдела и строит.отдела
@@ -115,7 +118,6 @@ def download_schedule(previous_date_and_links: dict()):
     home_parser = parse.HomePagesParser()  # создания объекта для парсинга домашних страниц
     date_and_links = home_parser.get_date_and_links()  # Получаем даты и ссылки на страницы расписания по дням
     preloaded_days = get_days_dict(date_and_links)
-    folderName = getcwd() + "/" + conf.folder_path
 
     # Проходим по всем датам в preloaded_days,
     # если предыдущий объект дата-ссылка отличается от нынешнего,
@@ -123,12 +125,13 @@ def download_schedule(previous_date_and_links: dict()):
     for year in preloaded_days:
         for month in preloaded_days[year]:
             for day in preloaded_days[year][month]:
-                if not path.exists(folderName + " " + year + "/" + month + "/" + day):
-                    download_day(date_and_links, year, month, day)
+                if not path.exists(f"data/Schedule/"):
+                    makedirs("data/Schedule", exist_ok=True)
                 else:
                     if previous_date_and_links != date_and_links:
                         download_day(date_and_links, year, month, day)
-                        previous_date_and_links = date_and_links
+    
+    return date_and_links
     
 
 def start_schedule_app():
@@ -137,9 +140,9 @@ def start_schedule_app():
     previous_date_and_links = dict()
     
     while True:
-        download_schedule(previous_date_and_links)
+        previous_date_and_links = download_schedule(previous_date_and_links)
 
-        sleep(5) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов
+        sleep(30) # Задержка в 1 с. для того, чтобы компьютер не делал много запросов
     
     return True
 
