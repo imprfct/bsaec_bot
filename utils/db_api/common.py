@@ -4,6 +4,7 @@
 
 import pymysql
 from loader import con
+from datetime import date
 
 
 def student_registrated(chat_id: int):
@@ -27,10 +28,9 @@ def get_student_group(chat_id: int):
         cursor.execute(
             f"SELECT `group` from students WHERE chat_id = {chat_id};")
 
-        if cursor.fetchone() is None:
-            return None
+        result = cursor.fetchone()
 
-        return cursor.fetchone()['group']
+        return result['group']
 
 
 def get_students_groups():
@@ -54,3 +54,30 @@ def get_students_groups():
             result[group].append(chat_id)
 
     return result
+
+
+def schedule_saved_in_bd(date: date, group: str):
+    path_to_file = f"data/Schedule/{date.year}_{date.month}_{date.day}_{group}.jpg"
+    with con.cursor() as cursor:
+        sql = f"SELECT `file_id` FROM `media` WHERE `filename` = '{path_to_file}'"
+        cursor.execute(sql)
+        response = cursor.fetchone()
+
+        if response is None:
+            return None
+        else:
+            return response['file_id']
+
+
+def get_mode_by_chat_id(chat_id: str):
+    with con.cursor() as cursor:
+        cursor.execute(f"SELECT `specialization` FROM `students` WHERE `chat_id`='{chat_id}';")
+        specialization = cursor.fetchone()['specialization']
+    
+    # Согласно специализациям, установленным в data/groups_and_specialities.py
+    if specialization <= 1:
+        return "б"
+    elif specialization > 1:
+        return "с"
+    else:
+        return None

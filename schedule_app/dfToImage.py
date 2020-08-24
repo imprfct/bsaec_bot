@@ -46,7 +46,7 @@ empty_string = """    <tr>
     </tr>"""
 
 
-def get_image(data, path):
+def get_image(data, path, requested_from):
 	"""
 	Функция для сохранения картинки из данного датафрейма
 	в заданную директорию
@@ -77,8 +77,13 @@ def get_image(data, path):
 		
 		path = path.decode("utf-8")
 
-		# Добавляем новый файл в бд и отправляем пользователям по группам
-		asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo'), loop=event_loop)
+		if requested_from is None:
+			# Добавляем новый файл в бд и отправляем ВСЕМ пользователям по группам
+			asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo', None), loop=event_loop)
+		else:
+			# Добавляем новый файл в бд и отправляем пользователю, который запрашивал
+			asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo',
+														requested_from=requested_from), loop=event_loop)
 			
 
 	except Exception as exc:

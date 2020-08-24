@@ -7,7 +7,7 @@ from schedule_app.conf import folder_path
 from utils.db_api.common import get_students_groups
 
 
-async def sendSchedule(path: str, photo_id: str):
+async def sendScheduleToGroups(path: str, photo_id: str):
     filename = path.split("/")[-1]
     group = filename.split("_")[3].split(".")[0]
 
@@ -27,7 +27,22 @@ async def sendSchedule(path: str, photo_id: str):
                                     caption=datestr)
 
 
-async def upload_and_send_schedule(path, method, file_attr):
+async def sendScheduleToStudent(path: str, photo_id: str, requested_from):
+    filename = path.split("/")[-1]
+    group = filename.split("_")[3].split(".")[0]
+
+    date_list = filename.split("_")[:3]
+    year = date_list[0]
+    month = date_list[1]
+    day = date_list[2]
+    datestr = f"📆 Расписание на {day}.{month}.{year} для {group} группы"
+    
+    await bot.send_photo(chat_id=requested_from,
+                        photo=photo_id,
+                        caption=datestr)
+
+
+async def upload_and_send_schedule(path, method, file_attr, requested_from):
     with open(path, 'rb') as file:
         msg = await method(admins[0], file, disable_notification=True)
         if file_attr == 'photo':
@@ -44,7 +59,11 @@ async def upload_and_send_schedule(path, method, file_attr):
             print(
                 'Couldn\'t upload file at {}. Error is {}'.format(path, e))
         else:
-            await sendSchedule(path=path, photo_id=file_id)
+            if requested_from is None:
+                await sendScheduleToGroups(path=path, photo_id=file_id)
+            else:
+                await sendScheduleToStudent(path=path, photo_id=file_id,
+                                            requested_from=requested_from)
             
 
 async def uploadMediaFiles(folder, method, file_attr):
