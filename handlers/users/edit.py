@@ -19,10 +19,15 @@ from keyboards.default import start_and_edit_kb
 
 from data.groups_and_specialities import groups, encrypted_specialities
 from utils.db_api import common, edit, delete_users
+from utils.db_api.common import student_registrated
 
 
 @dp.message_handler(commands=['edit'], state="*")
 async def bot_edit_step_1(message: types.Message, state: FSMContext):
+    if student_registrated(message.chat.id) is False:
+        await message.answer("😱 Вы еще не зарегистрированы!\n\nДля регистрации попробуйте /start")
+        return
+
     async with state.proxy() as data:
         if common.student_registrated(message.chat.id):
             if edit.get_student_regdate(message.chat.id) is not None:

@@ -17,13 +17,17 @@ from telegram_bot_calendar import LSTEP
 from keyboards.inline.calendar import Calendar
 
 from utils.db_api.common import get_student_group, schedule_saved_in_bd,\
-    get_mode_by_chat_id
+                        get_mode_by_chat_id, student_registrated
 from schedule_app.main import download_day_for_group
 from schedule_app.conf import weekdays
 
 
-@dp.message_handler(commands='schedule')
+@dp.message_handler(commands='schedule', state="*")
 async def start(message):
+    if student_registrated(message.chat.id) is False:
+        await message.answer("😱 Вы еще не зарегистрированы!\n\nДля регистрации попробуйте /start")
+        return
+    
     calendar, step = Calendar(locale="rus", min_date=date(
         2020, 1, 1), max_date=date.today()).build()
     await bot.send_message(message.chat.id,
