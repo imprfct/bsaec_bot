@@ -50,8 +50,17 @@ def get_image(data, path, requested_from):
 	"""
 	Функция для сохранения картинки из данного датафрейма
 	в заданную директорию
-	data : pandas.DataFrame()
-	path : Windows directory
+
+	args:
+		data: pandas.DataFrame()
+		path: dir
+		requested_from: int - Id чата человека, запросившего расписание
+
+	Схема работы:
+		1. Формируем все необходимые переменные для создания картинки
+		2. Скачиваем файл в папку с расписаниями
+		3. Если у нас запрашивали расписание (т.е. requested_from не равен None),
+		тогда необходимо отправить его пользователю, иначе - отправить всем погруппно
 	"""
 	html = css + data.to_html(bold_rows=False).replace(empty_string, '')
 
@@ -68,18 +77,21 @@ def get_image(data, path, requested_from):
 	try:
 		# Если скрипт запущен на windows
 		if platform == "win32":
-			path = (path + ".jpg").encode("utf-8")
+			path = (path + ".jpg").encode("utf-8")	# Для корректной работы шифруем в UTF-8
 			imgkit.from_string(css+html, path, options=options, config=config)
 		# Если скрипт запущен на linux
 		elif platform.startswith("linux2"):
 			path = (path + ".jpg").encode("utf-8")
 			imgkit.from_string(css+html, path, options=options)
 		
-		path = path.decode("utf-8")
+		path = path.decode("utf-8")	# А здесь возвращаем из байтового представления в строку
 
+		# Если это расписание появилось на сайте
 		if requested_from is None:
 			# Добавляем новый файл в бд и отправляем ВСЕМ пользователям по группам
 			asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo', None), loop=event_loop)
+		
+		# Если это расписание у нас запросили
 		else:
 			# Добавляем новый файл в бд и отправляем пользователю, который запрашивал
 			asyncio.ensure_future(upload_and_send_schedule(path, bot.send_photo, 'photo',
