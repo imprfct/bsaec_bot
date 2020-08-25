@@ -264,9 +264,14 @@ class PageParser:
         # Удаляем пустые строки в датафреймах
         for schedule in self.schedule:
             # Перебираем все предметы и индексы строк
-            for subject, hour in zip(schedule["Предмет"], schedule.index):
+            for subject, hour, auditory in zip(schedule["Предмет"], schedule.index, schedule["Аудитория"]):
                 # Если длина строки меньше или равна двойки, то в ней нет данных.
-                if len(subject) <= 2 or subject == "  /  " or (subject in conf.empty_strings):
+                if len(subject) <= 2 or (subject == "  /  ") \
+                    or (subject in conf.empty_strings) or ("———" in subject) or ("___" in subject):
+
+                    if len(auditory) >= 2:
+                        continue
+
                     schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
 
         # Удаляем разрывы строк в расписниях
@@ -279,6 +284,9 @@ class PageParser:
         for i in range(len(self.schedule) - 1):
             try:
                 if self.schedule[i].empty:
+                    self.schedule.pop(i)
+                
+                if len(self.schedule[i].index) == 0:
                     self.schedule.pop(i)
             except IndexError:
                 """

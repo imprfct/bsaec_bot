@@ -12,6 +12,8 @@ table.dataframe {
   border: 0px solid #727272;
   text-align: left;
   border-collapse: collapse;
+  width: 300px;
+  height: 100%;
 }
 table.dataframe td, table.dataframe th {
   border: 1px solid #707070;
@@ -69,7 +71,7 @@ def get_image(data, path, requested_from):
                "quiet": "",
                "quality": 99,
                "log-level": "none",
-               "width": 270}
+			   "width": 315}
 	config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
 
 	# В зависимости от платформы необходимо правильно преобразовать путь
