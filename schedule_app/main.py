@@ -168,6 +168,16 @@ def download_schedule(previous_date_and_links: dict()):
     return date_and_links
 
 
+def get_groups(url: str):
+    try:
+        # Создаем объект типа Parser из модуля parse
+        parser = parse.PageParser(url)
+        groups = parser.get_groups()
+        return groups
+    except Exception:
+        return None
+
+
 def start_schedule_app():
     """
     Функция для запуска парсера
