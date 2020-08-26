@@ -104,7 +104,7 @@ def get_days_dict(date_and_links):
     return date_and_links_days
 
 
-def download_day_for_group(user_who_requested, url, req_date: date, group):
+def download_day_for_group(user_who_requested, urls, req_date: date, group):
     """
     Функция для скачивания расписания на запрошенный день для запрошенной группы.
 
@@ -115,12 +115,14 @@ def download_day_for_group(user_who_requested, url, req_date: date, group):
         group: str - группа студента, запросившего расписание
     """
     try:
-        # Создаем объект типа Parser из модуля parse
-        parser = parse.PageParser(url)
-
-        groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
-        # Получаем все расписания со страницы, которую нам передали
-        schedules = parser.get_schedule()
+        for url in urls:
+            # Создаем объект типа Parser из модуля parse
+            parser = parse.PageParser(url)
+            groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
+            if group not in groups:
+                continue
+            # Получаем все расписания со страницы, которую нам передали
+            schedules = parser.get_schedule()
 
         makedirs("data/Schedule/", exist_ok=True)
 
@@ -168,11 +170,18 @@ def download_schedule(previous_date_and_links: dict()):
     return date_and_links
 
 
-def get_groups(url: str):
+def get_groups(urls: list):
     try:
-        # Создаем объект типа Parser из модуля parse
-        parser = parse.PageParser(url)
-        groups = parser.get_groups()
+        groups = list()
+        for url in urls:
+            try:
+                # Создаем объект типа Parser из модуля parse
+                parser = parse.PageParser(url)
+                for group in parser.get_groups():
+                    groups.append(group)
+            except Exception:
+                continue
+
         return groups
     except Exception:
         return None

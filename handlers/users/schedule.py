@@ -51,10 +51,8 @@ async def inline_kb_answer_callback_handler(query, state:FSMContext):
                                     reply_markup=key)
     elif result:
         chat_id = query.from_user.id
-        group = get_student_group(chat_id)
         requested_date = result
         # бух-отдел ("б") или строит. отдел ("c")
-        mode = get_mode_by_chat_id(chat_id)
         day = requested_date.strftime("%d")  # день типа 01, 02 ... 31
         month = requested_date.strftime("%m")   # Месяц типа 01, 02 ... 12
         year = requested_date.strftime("%Y")  # Год
@@ -62,47 +60,24 @@ async def inline_kb_answer_callback_handler(query, state:FSMContext):
         # переводим название дня недели с анг. на русский
         weekday = weekdays[requested_date.strftime("%A")]
         
-        if mode == "б":
-            url = f"http://bgaek.by/{day}-{month}-{year}-{weekday}/"
+        buh_url = f"http://bgaek.by/{day}-{month}-{year}-{weekday}/"
+        str_url = f"http://bgaek.by/расписание-на-{day}-{month}-{year}-{weekday}"
             
-            async with state.proxy() as data:
-                data['date'] = result
-                data['url'] = url
+        async with state.proxy() as data:
+            data['date'] = result
+            data['urls'] = [buh_url, str_url]
 
-            groups = get_groups(url)
-            if groups is None:
-                await bot.send_message(chat_id=chat_id,
-                                text="Произошла ошибка. Попробуйте еще раз")
-            else:
-                await bot.edit_message_text(f"Выберите группу",
-                                query.message.chat.id,
-                                query.message.message_id,
-                                reply_markup=get_groups_kb(groups))
-            
-            await ScheduleStates.waiting_for_group.set()
-
-        elif mode == "с":
-            url = f"http://bgaek.by/расписание-на-{day}-{month}-{year}-{weekday}"
-            
-            async with state.proxy() as data:
-                data['date'] = result
-                data['url'] = url
-
-            groups = get_groups(url)
-            if groups is None:
-                await bot.send_message(chat_id=chat_id,
-                                text="Произошла ошибка. Попробуйте еще раз")
-            else:
-                await bot.edit_message_text(f"Выберите группу",
-                                query.message.chat.id,
-                                query.message.message_id,
-                                reply_markup=get_groups_kb(groups))
-
-            await ScheduleStates.waiting_for_group.set()
-
-        else:
+        groups = get_groups([buh_url, str_url])
+        if groups is None:
             await bot.send_message(chat_id=chat_id,
-                                text="Произошла ошибка. Попробуйте еще раз")
+                            text="Произошла ошибка. Попробуйте еще раз")
+        else:
+            await bot.edit_message_text(f"Выберите группу",
+                            query.message.chat.id,
+                            query.message.message_id,
+                            reply_markup=get_groups_kb(groups))
+        
+        await ScheduleStates.waiting_for_group.set()
 
 
 @dp.callback_query_handler(state=ScheduleStates.waiting_for_group)
@@ -114,7 +89,7 @@ async def inline_kb_answer_callback_handler_2(query, state:FSMContext):
     chat_id = query.from_user.id
     async with state.proxy() as data:
         requested_date = data['date']
-        url = data['url'] 
+        urls = data['urls'] 
     group = query.data
     day = requested_date.strftime("%d")  # день типа 01, 02 ... 31
     month = requested_date.strftime("%m")   # Месяц типа 01, 02 ... 12
@@ -128,10 +103,10 @@ async def inline_kb_answer_callback_handler_2(query, state:FSMContext):
         await bot.send_photo(chat_id=chat_id,
                             photo=schedule,
                             caption="")
-                            
+
     else:
         msg_sended = download_day_for_group(user_who_requested=chat_id,
-                                        url=url, req_date=requested_date, group=group)
+                                        urls=urls, req_date=requested_date, group=group)
         
         if msg_sended is False:
             await bot.send_message(chat_id=chat_id,
