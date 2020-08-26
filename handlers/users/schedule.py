@@ -11,7 +11,7 @@
 from loader import bot, dp, FSMContext
 from aiogram import types
 
-from datetime import date
+from datetime import date, timedelta
 from telegram_bot_calendar import LSTEP
 from keyboards.inline.calendar import Calendar
 
@@ -28,19 +28,19 @@ async def start(message):
         return
     
     calendar, step = Calendar(locale="rus", min_date=date(
-        2020, 1, 1), max_date=date.today()).build()
+        2020, 1, 1), max_date=date.today() + timedelta(days=3)).build()
     await bot.send_message(message.chat.id,
-                           f"Select {LSTEP[step]}",
+                           f"Выберите год",
                            reply_markup=calendar)
 
 
 @dp.callback_query_handler(Calendar.func())
 async def inline_kb_answer_callback_handler(query):
     result, key, step = Calendar(locale="rus", min_date=date(
-        2020, 1, 1), max_date=date.today()).process(query.data)
+        2020, 1, 1), max_date=date.today() + timedelta(days=3)).process(query.data)
 
     if not result and key:
-        await bot.edit_message_text(f"Select {LSTEP[step]}",
+        await bot.edit_message_text(f"Выберите месяц и день",
                                     query.message.chat.id,
                                     query.message.message_id,
                                     reply_markup=key)

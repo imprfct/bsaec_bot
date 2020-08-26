@@ -1,4 +1,5 @@
-from telegram_bot_calendar import DetailedTelegramCalendar
+from telegram_bot_calendar import DetailedTelegramCalendar, MONTH, YEAR
+from datetime import date
 
 rus_translation_months = ["янв", "фев", "мар", "апр",
                         "май", "июн", "июл", "авг",
@@ -12,9 +13,12 @@ class Calendar(DetailedTelegramCalendar):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.empty_nav_button = "❌"
-        self.prev_button = "⬅️"
-        self.next_button = "➡️"
+        if date.today().year == self.min_date.year:
+            self.first_step = MONTH
+        else:
+            self.first_step = YEAR
+
+        self.size_month = 3
 
         self.empty_year_button = ""
         self.empty_month_button = ""
