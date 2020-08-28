@@ -116,13 +116,16 @@ def download_day_for_group(user_who_requested, urls, req_date: date, group):
     """
     try:
         for url in urls:
-            # Создаем объект типа Parser из модуля parse
-            parser = parse.PageParser(url)
-            groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
-            if group not in groups:
+            try:
+                # Создаем объект типа Parser из модуля parse
+                parser = parse.PageParser(url)
+                groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
+                if group not in groups:
+                    continue
+                # Получаем все расписания со страницы, которую нам передали
+                schedules = parser.get_schedule()
+            except Exception:
                 continue
-            # Получаем все расписания со страницы, которую нам передали
-            schedules = parser.get_schedule()
 
         makedirs("data/Schedule/", exist_ok=True)
 

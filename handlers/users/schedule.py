@@ -61,13 +61,14 @@ async def inline_kb_answer_callback_handler(query, state:FSMContext):
         weekday = weekdays[requested_date.strftime("%A")]
         
         buh_url = f"http://bgaek.by/{day}-{month}-{year}-{weekday}/"
-        str_url = f"http://bgaek.by/расписание-на-{day}-{month}-{year}-{weekday}"
-            
+        str_url_1 = f"http://bgaek.by/расписание-на-{day}-{month}-{year}-{weekday}"
+        str_url_2 = f"http://bgaek.by/{day}-{month}-{year}-{weekday}-2/"
+
         async with state.proxy() as data:
             data['date'] = result
-            data['urls'] = [buh_url, str_url]
+            data['urls'] = [buh_url, str_url_1, str_url_2]
 
-        groups = get_groups([buh_url, str_url])
+        groups = get_groups([buh_url, str_url_1, str_url_2])
         if groups == list():
             await bot.edit_message_text(f"На сайте нет расписания на {str(result)} 😅",
                             query.message.chat.id,
@@ -113,6 +114,7 @@ async def inline_kb_answer_callback_handler_2(query, state:FSMContext):
                                         urls=urls, req_date=requested_date, group=group)
         
         if msg_sended is False:
+            print(urls)
             await bot.send_message(chat_id=chat_id,
                             text="На сайте нет расписания "\
                             f"на {day}.{month}.{year}... 😅")
