@@ -68,9 +68,13 @@ async def inline_kb_answer_callback_handler(query, state:FSMContext):
             data['urls'] = [buh_url, str_url]
 
         groups = get_groups([buh_url, str_url])
-        if groups is None:
-            await bot.send_message(chat_id=chat_id,
-                            text="Произошла ошибка. Попробуйте еще раз")
+        if groups == list():
+            await bot.edit_message_text(f"На сайте нет расписания на {str(result)} 😅",
+                            query.message.chat.id,
+                            query.message.message_id,
+                            reply_markup=get_groups_kb(groups))
+            await state.finish()
+            return
         else:
             await bot.edit_message_text(f"Выберите группу",
                             query.message.chat.id,
