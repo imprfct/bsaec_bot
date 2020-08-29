@@ -46,6 +46,16 @@ def download_all_days_in_range(min_date=MIN_DATE, max_date=MAX_DATE):
 def add_in_db():
     asyncio.ensure_future(uploadMediaFiles(img_path, bot.send_photo, 'photo'), loop=asyncio.get_event_loop())
 
+def upload_schedules():
+    loop = asyncio.get_event_loop()
+
+    tasks = [
+        loop.create_task(uploadMediaFiles(img_path, bot.send_photo, 'photo')),
+    ]
+
+    wait_tasks = asyncio.wait(tasks)
+    loop.run_until_complete(wait_tasks)
+    loop.close()
 
 if __name__ == "__main__":
     if truncate_media_table:
@@ -59,7 +69,5 @@ if __name__ == "__main__":
             wait_tasks = asyncio.wait(tasks)
             loop.run_until_complete(wait_tasks)
             loop.close()
-
-            logging.info("Конец")
 
             
