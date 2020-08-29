@@ -10,7 +10,7 @@ from loader import bot, con
 from data.config import admins
 from schedule_app.conf import folder_path
 from utils.db_api.common import get_students_groups
-
+from datetime import date
 
 async def upload_and_send_schedule(path, method, file_attr, requested_from):
     """
@@ -66,7 +66,10 @@ async def sendScheduleToGroups(path: str, photo_id: str):
     year = date_list[0]
     month = date_list[1]
     day = date_list[2]
-    datestr = f"📆 Расписание на {day}.{month}.{year} для {group} группы"
+    
+    _date = date(year, month, day).strftime("%d.%m.%y")
+
+    datestr = f"📆 Расписание на {_date} для {group} группы"
 
     groups_have_students = get_students_groups()
 
@@ -91,7 +94,10 @@ async def sendScheduleToStudent(path: str, photo_id: str, requested_from):
     month = date_list[1]
     day = date_list[2]
     datestr = f"📆 Расписание на {day}.{month}.{year}"
-
+    
+    _date = date(year, month, day).strftime("%d.%m.%y")
+    datestr = f"📆 Расписание на {_date} для {group} группы"
+    
     await bot.send_photo(chat_id=requested_from,
                          photo=photo_id,
                          caption=datestr)

@@ -10,8 +10,9 @@
 
 from aiogram import types
 from loader import dp
-
+from sys import platform
 
 @dp.message_handler()
 async def bot_echo(message: types.Message):
+    print(platform)
     await message.answer(f"Не очень вас понимаю... 😓\nПопробуйте /help для того, чтобы увидеть список доступных команд")

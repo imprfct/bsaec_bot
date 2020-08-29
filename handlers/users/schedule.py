@@ -112,9 +112,7 @@ async def inline_kb_answer_callback_handler_2(query, state:FSMContext):
     else:
         msg_sended = download_day_for_group(user_who_requested=chat_id,
                                         urls=urls, req_date=requested_date, group=group)
-        
         if msg_sended is False:
-            print(urls)
             await bot.send_message(chat_id=chat_id,
                             text="На сайте нет расписания "\
                             f"на {day}.{month}.{year}... 😅")

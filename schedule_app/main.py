@@ -1,8 +1,9 @@
 from . import conf  # Файл настроек для данной программы
 from . import parse  # Мой модуль для парснга HTML-страниц с расписанием БГАЭК
 from . import dfToImage    # Модуль для преобразования датафрейма в картинку
+from data.config import img_path
 
-from os import makedirs, path, listdir, getcwd  # Работа с папками
+import os
 from datetime import datetime, timedelta, date   # Модуль для работы с датой
 from bs4 import BeautifulSoup  # Класс для парсинга
 from requests import get 	# Получение кода страницы из интернета
@@ -23,15 +24,15 @@ def parse_page(_url, _path):
     schedules = parser.get_schedule()
 
     # Создаем все необходимые папки по пути, который нам передали аргументом
-    makedirs(conf.folder_path, exist_ok=True)
+    os.makedirs(img_path, exist_ok=True)
 
     # Попарно перебираем все группы и расписания
     for group, schedule in zip(groups, schedules):
-        if path.exists(f"{_path}_{group}.jpg"):
+        if os.path.exists(f"{_path}_{group}.jpg"):
             continue
         else:
-            dfToImage.get_image(schedule, path=_path+"_" +
-                                group, requested_from=None)
+            dfToImage.get_image(schedule, path=f"{_path}_{group}",
+                                requested_from=None)
 
 
 def download_day(dates_and_links, year, month, day):
@@ -42,7 +43,7 @@ def download_day(dates_and_links, year, month, day):
     """
     # Задаем путь!
     # Пример - 'Расписание 2020/1/1'
-    path = "data/Schedule/" + year + "_" + month + "_" + day
+    path = os.path.join(img_path, f"{year}_{month}_{day}")
 
     # Находим ссылку по имеющейся дате
     # У нас будет 2 ссылки - одна для бух.отдела и строит.отдела
@@ -122,22 +123,22 @@ def download_day_for_group(user_who_requested, urls, req_date: date, group):
                 groups = parser.get_groups()  # Получаем все группы со страницы, которую нам передали
                 if group not in groups:
                     continue
-                # Получаем все расписания со страницы, которую нам передали
-                schedules = parser.get_schedule()
+                else:
+                    # Получаем все расписания со страницы, которую нам передали
+                    schedules = parser.get_schedule()
+                    break
             except Exception:
                 continue
 
-        makedirs("data/Schedule/", exist_ok=True)
-
+        os.makedirs(img_path, exist_ok=True)
         # Попарно перебираем все группы и расписания
         for _group, schedule in zip(groups, schedules):
             if _group == group:
                 day = req_date.day
                 month = req_date.month
                 year = req_date.year
-
                 dfToImage.get_image(data=schedule,
-                                    path=f"data/Schedule/{year}_{month}_{day}_{group}",
+                                    path=os.path.join(img_path, f"{year}_{month}_{day}_{group}"),
                                     requested_from=user_who_requested)
                 return True
     except Exception:
@@ -165,8 +166,8 @@ def download_schedule(previous_date_and_links: dict()):
     for year in preloaded_days:
         for month in preloaded_days[year]:
             for day in preloaded_days[year][month]:
-                if not path.exists(f"data/Schedule/"):
-                    makedirs("data/Schedule", exist_ok=True)
+                if not os.path.exists(img_path):
+                    os.makedirs(img_path, exist_ok=True)
                 if previous_date_and_links != date_and_links:
                     download_day(date_and_links, year, month, day)
 
