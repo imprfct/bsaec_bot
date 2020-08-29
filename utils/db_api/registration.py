@@ -7,6 +7,7 @@ from datetime import datetime
 
 from loader import con
 from .common import student_registrated
+import logging
 
 
 def registrate_student(chat_id: int, firstname: str, surname: str, group: str, specialization: str):
@@ -22,6 +23,9 @@ def registrate_student(chat_id: int, firstname: str, surname: str, group: str, s
 
             cursor.execute(sql_reg)
             con.commit()    # Подтверждаем внесенные изменения
+            
+            logging.info(f"Добавлен новый пользователь в чат - {chat_id}, группа - {group}, имя - {firstname} {surname}")
+            
             return True
     except pymysql.err.IntegrityError as exc:
         print(exc)

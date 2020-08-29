@@ -8,6 +8,7 @@ from loader import con
 from datetime import date
 from data.config import img_path
 from sys import platform
+import logging
 
 
 def student_registrated(chat_id: int):
@@ -67,7 +68,6 @@ def schedule_saved_in_bd(date: date, group: str):
     
     with con.cursor() as cursor:
         sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
-        print(sql)
         cursor.execute(sql)
         response = cursor.fetchall()
 
