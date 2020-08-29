@@ -63,9 +63,9 @@ async def sendScheduleToGroups(path: str, photo_id: str):
     group = filename.split("_")[3].split(".")[0]
 
     date_list = filename.split("_")[:3]
-    year = date_list[0]
-    month = date_list[1]
-    day = date_list[2]
+    year = int(date_list[0])
+    month = int(date_list[1])
+    day = int(date_list[2])
     
     _date = date(year, month, day).strftime("%d.%m.%y")
 
@@ -90,9 +90,9 @@ async def sendScheduleToStudent(path: str, photo_id: str, requested_from):
     group = filename.split("_")[3].split(".")[0]
 
     date_list = filename.split("_")[:3]
-    year = date_list[0]
-    month = date_list[1]
-    day = date_list[2]
+    year = int(date_list[0])
+    month = int(date_list[1])
+    day = int(date_list[2])
     datestr = f"📆 Расписание на {day}.{month}.{year}"
     
     _date = date(year, month, day).strftime("%d.%m.%y")

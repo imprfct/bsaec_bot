@@ -70,7 +70,6 @@ def get_image(data, path, requested_from):
                "encoding": "utf-8",
                "quiet": "",
                "quality": 99,
-			   "xvfb": "",
 			   "width": 315}
 	config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
 
@@ -79,7 +78,7 @@ def get_image(data, path, requested_from):
 	try:
 		# Если скрипт запущен на windows
 		if platform.startswith("win32"):
-			path = (path + ".jpg").encode("utf-8")	# Для корректной работы шифруем в UTF-8
+			path = (path + ".jpg").replace("\\", "/").encode("utf-8")	# Для корректной работы шифруем в UTF-8
 			imgkit.from_string(css+html, path, options=options, config=config)
 		# Если скрипт запущен на linux
 		elif platform.startswith("linux"):
