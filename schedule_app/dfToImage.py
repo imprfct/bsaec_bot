@@ -70,6 +70,7 @@ def get_image(data, path, requested_from):
                "encoding": "utf-8",
                "quiet": "",
                "quality": 99,
+			   "xvfb": "",
 			   "width": 315}
 	config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
 
