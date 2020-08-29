@@ -126,7 +126,7 @@ async def uploadMediaFiles(folder, method, file_attr):
                 # Загрузка файла в БД
                 with con.cursor() as cursor:
                     cursor.execute(
-                        f"INSERT INTO `bsaec_bot_db`.`media` (`file_id`, `filename`) VALUES ('{file_id}', '{filename}');")
+                        f"INSERT INTO `bsaec_bot_db`.`media` (`file_id`, `filename`) VALUES ('{file_id}', '{os.path.join(folder_path, filename)}');")
                 con.commit()
             except Exception as e:
                 print(
