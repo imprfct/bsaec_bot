@@ -63,7 +63,7 @@ def schedule_saved_in_bd(date: date, group: str):
     with con.cursor() as cursor:
         sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
         import logging
-        logging.log(sql)
+        logging.log(level=1,msg=sql)
         cursor.execute(sql)
         response = cursor.fetchall()
 
