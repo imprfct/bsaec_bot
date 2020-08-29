@@ -7,7 +7,7 @@ import os
 import asyncio
 import pymysql
 from loader import bot, con
-from data.config import admins
+from data.config import admins, spam_account
 from schedule_app.conf import folder_path
 from utils.db_api.common import get_students_groups
 from datetime import date
@@ -26,7 +26,7 @@ async def upload_and_send_schedule(path, method, file_attr, requested_from):
 
     with open(path, 'rb') as file:
         # Отправляем фото кому-то, чтобы загрузить фото на сервер телеграма
-        msg = await method(admins[0], file, disable_notification=True)
+        msg = await method(spam_account[0], file, disable_notification=True)
 
         # Получаем file_id нашего файла с сервера телеграм
         if file_attr == 'photo':
@@ -116,7 +116,7 @@ async def uploadMediaFiles(folder, method, file_attr):
             continue
 
         with open(os.path.join(folder_path, filename), 'rb') as file:
-            msg = await method(admins[0], file, disable_notification=True)
+            msg = await method(spam_account[0], file, disable_notification=True)
             if file_attr == 'photo':
                 file_id = msg.photo[-1].file_id
             else:

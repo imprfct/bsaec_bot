@@ -12,6 +12,8 @@ BOT_TOKEN = "1339117782:AAGnpZZZqY8HQ6iY4IZEHevdULzThuWqPY4"
 
 admins = ["504242356"]
 
+spam_account = ["1397240963"]
+
 if platform.startswith("linux"):
     img_path = os.path.join(os.getcwd(), "data/Schedule/")
 else:

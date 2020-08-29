@@ -91,16 +91,22 @@ async def schedule_step_3(query, state:FSMContext):
             скидывать ему список групп просто бессмысленно, поэтому пропускаем
             этот шаг
             """
+            await bot.edit_message_text(f"⏳ Ищу расписание",
+                                    query.message.chat.id,
+                                    query.message.message_id)
+
             chat_id = query.from_user.id
             group = get_student_group(chat_id)
             # Проверка, есть ли такое расписание в БД
             schedule = schedule_saved_in_bd(requested_date, group)
+            
 
             # Если есть, то отправить расписание
             if schedule is not None:
+                datestr = requested_date.strftime("%d.%m.%Y")
                 await bot.send_photo(chat_id=chat_id,
                                     photo=schedule,
-                                    caption="")
+                                    caption=f"📆 Расписание на {datestr} для {group} группы")
 
             else:
                 msg_sended = download_day_for_group(user_who_requested=chat_id,

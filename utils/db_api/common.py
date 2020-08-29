@@ -59,16 +59,16 @@ def get_students_groups():
 
 
 def schedule_saved_in_bd(date: date, group: str):
-    path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
+    path_to_file = os.path.join(f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg")
     with con.cursor() as cursor:
-        sql = f"SELECT `file_id` FROM `media` WHERE `filename` = '{path_to_file}'"
+        sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
         cursor.execute(sql)
-        response = cursor.fetchone()
+        response = cursor.fetchall()
 
-        if response is None:
+        if response is None or response == list() or response == tuple():
             return None
         else:
-            return response['file_id']
+            return response[-1]['file_id']
 
 
 def get_mode_by_chat_id(chat_id: str):
