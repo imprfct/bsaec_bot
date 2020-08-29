@@ -23,7 +23,7 @@ async def upload_and_send_schedule(path, method, file_attr, requested_from):
         3. file_attr: str - то, что мы загружаем ("photo", "video")
         4. requested_from: int/None - Пользователь, который запросил расписание
     """
-
+    
     with open(path, 'rb') as file:
         # Отправляем фото кому-то, чтобы загрузить фото на сервер телеграма
         msg = await method(spam_account[0], file, disable_notification=True)

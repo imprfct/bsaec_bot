@@ -41,8 +41,7 @@ async def schedule_step_1(message, state:FSMContext):
     
 @dp.callback_query_handler(state=ScheduleStates.waiting_for_mode)
 async def schedule_step_2(query, state:FSMContext):
-    calendar, step = Calendar(locale="rus", min_date=date(
-        2020, 1, 1), max_date=date.today() + timedelta(days=3)).build()
+    calendar, step = Calendar(locale="rus").build()
     
     async with state.proxy() as data:
         data['mode'] = query.data
@@ -57,8 +56,7 @@ async def schedule_step_2(query, state:FSMContext):
 
 @dp.callback_query_handler(Calendar.func(), state=ScheduleStates.waiting_for_date)
 async def schedule_step_3(query, state:FSMContext):
-    result, key, step = Calendar(locale="rus", min_date=date(
-        2020, 1, 1), max_date=date.today() + timedelta(days=3)).process(query.data)
+    result, key, step = Calendar(locale="rus").process(query.data)
 
     if not result and key:
         await bot.edit_message_text(f"Выберите месяц и день",

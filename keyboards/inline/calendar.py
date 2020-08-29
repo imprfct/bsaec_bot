@@ -1,5 +1,5 @@
 from telegram_bot_calendar import DetailedTelegramCalendar, MONTH, YEAR
-from datetime import date
+from datetime import date, timedelta
 
 rus_translation_months = ["янв", "фев", "мар", "апр",
                         "май", "июн", "июл", "авг",
@@ -8,10 +8,16 @@ rus_translation_months = ["янв", "фев", "мар", "апр",
 rus_translation_days_of_week = ['Пн', 'Вт', 'Ср',
                                 'Чт', 'Пт', 'Сб', 'Вс']
 
+MIN_DATE = date(2020, 1, 1)
+MAX_DATE = date.today() + timedelta(days=3)
+
 
 class Calendar(DetailedTelegramCalendar):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.min_date = MIN_DATE
+        self.max_date = MAX_DATE
 
         if date.today().year == self.min_date.year:
             self.first_step = MONTH

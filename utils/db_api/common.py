@@ -11,6 +11,17 @@ from sys import platform
 import logging
 
 
+def truncate_media_table():
+    """
+    Полноcmью очистить таблицу с media
+    """
+    with con.cursor() as cursor:
+        cursor.execute("TRUNCATE TABLE `media`;")
+        
+    con.commit()
+    return True
+
+
 def student_registrated(chat_id: int):
     """
     Проверка, зарегистрирован ли пользователь, если
