@@ -17,5 +17,5 @@ con = pymysql.connect(host="localhost",
                      user="root",
                      password="8Ez7ENzj",
                      db="bsaec_bot_db",
-                     charset='utf8mb4',
+                     charset='utf8',
                      cursorclass=pymysql.cursors.DictCursor)

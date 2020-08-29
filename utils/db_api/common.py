@@ -7,6 +7,7 @@ import pymysql
 from loader import con
 from datetime import date
 from data.config import img_path
+from sys import platform
 
 
 def student_registrated(chat_id: int):
@@ -59,7 +60,11 @@ def get_students_groups():
 
 
 def schedule_saved_in_bd(date: date, group: str):
-    path_to_file = f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg"
+    if platform.startswith("windows"):
+        path_to_file = f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg"
+    else:
+        path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
+    
     with con.cursor() as cursor:
         sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
         print(sql)
