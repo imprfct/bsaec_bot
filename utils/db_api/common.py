@@ -59,7 +59,7 @@ def get_students_groups():
 
 
 def schedule_saved_in_bd(date: date, group: str):
-    path_to_file = os.path.join(f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg")
+    path_to_file = f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg"
     with con.cursor() as cursor:
         sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
         cursor.execute(sql)

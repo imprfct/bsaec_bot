@@ -3,6 +3,7 @@ from . import parse  # Мой модуль для парснга HTML-стран
 from . import dfToImage    # Модуль для преобразования датафрейма в картинку
 from data.config import img_path
 
+import logging
 import os
 from datetime import datetime, timedelta, date   # Модуль для работы с датой
 from bs4 import BeautifulSoup  # Класс для парсинга
@@ -195,7 +196,7 @@ def start_schedule_app():
     """
     Функция для запуска парсера
     """
-    print("Запуск парсера...")
+    logging.info("Парсер запущен")
     # Используется для проверки, появилось ли новое расписание
     previous_date_and_links = dict()
 

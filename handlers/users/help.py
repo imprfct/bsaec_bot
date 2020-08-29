@@ -20,6 +20,7 @@ async def bot_help(message: types.Message):
     text = [
         'Список команд: ',
         '/start - Начать диалог',
+        '/report - Оставить отзыв', 
         '/schedule - Получить расписание на любой день',
         '/edit - Изменение группы',
         '/delete - Удаление себя из системы',
