@@ -109,7 +109,8 @@ async def bot_start_step_3(message: types.Message, state: FSMContext):
                                        surname=surname,
                                        group=group,
                                        specialization=speciality) == True:
-        await message.answer("✅ Вы были успешно зарегистрированы!",\
+        await message.answer("✅ Вы были успешно зарегистрированы!\n\nТеперь вы будете автоматические получать "\
+                            "расписания. Для просмотра доступных команд введите /help",
                             reply_markup=types.ReplyKeyboardRemove())
     else:
         await message.answer("🤔 Что-то пошло не так... Попробуйте еще раз /start",\
