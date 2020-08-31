@@ -15,6 +15,7 @@ def truncate_media_table():
     """
     Полноcmью очистить таблицу с media
     """
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         cursor.execute("TRUNCATE TABLE `media`;")
         
@@ -27,6 +28,7 @@ def student_registrated(chat_id: int):
     Проверка, зарегистрирован ли пользователь, если
     зарегистрирован, то вернет True, иначе False
     """
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         cursor.execute(f"SELECT * FROM students WHERE chat_id = {chat_id};")
         if cursor.fetchone() is not None:
@@ -39,6 +41,7 @@ def get_student_group(chat_id: int):
     """
     Получение группы учащегося из БД
     """
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         cursor.execute(
             f"SELECT `group` from students WHERE chat_id = {chat_id};")
@@ -55,6 +58,7 @@ def get_students_groups():
     """
     result = dict()
 
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         select_sql = "SELECT `chat_id`, `group` FROM students;"
         cursor.execute(select_sql)
@@ -77,6 +81,7 @@ def schedule_saved_in_bd(date: date, group: str):
     else:
         path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
     
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
         cursor.execute(sql)
@@ -89,6 +94,7 @@ def schedule_saved_in_bd(date: date, group: str):
 
 
 def get_mode_by_chat_id(chat_id: str):
+    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:
         cursor.execute(f"SELECT `specialization` FROM `students` WHERE `chat_id`='{chat_id}';")
         specialization = cursor.fetchone()['specialization']

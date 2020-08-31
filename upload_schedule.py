@@ -12,6 +12,7 @@ from schedule_app.conf import folder_path
 from utils.db_api.common import get_students_groups
 from datetime import date
 
+
 async def upload_and_send_schedule(path, method, file_attr, requested_from):
     """
     Функция для загрузки id файлов с сервера в БД, а также подготовка к
@@ -109,12 +110,15 @@ async def uploadMediaFiles(folder, method, file_attr):
 
     Подробных комментариев нет - функция временно не используется
     """
-
+    
     folder_path = folder
-    for filename in os.listdir(folder_path):
+    for counter, filename in enumerate(os.listdir(folder_path)):
+        if counter % 100 == 0 and counter != 0:
+            await asyncio.sleep(10)
+
         if filename.startswith('.'):
             continue
-
+        
         with open(os.path.join(folder_path, filename), 'rb') as file:
             msg = await method(spam_account[0], file, disable_notification=True)
             if file_attr == 'photo':

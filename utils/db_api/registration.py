@@ -15,6 +15,7 @@ def registrate_student(chat_id: int, firstname: str, surname: str, group: str, s
     Функция для регистрации пользователя в БД
     """
     try:
+        con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
         with con.cursor() as cursor:
             sql_reg = "INSERT INTO `bsaec_bot_db`.`students` "\
                 "(`chat_id`, `firstname`, `surname`, `group`, `specialization`, `regdate`) "\
