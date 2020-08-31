@@ -4,7 +4,7 @@ import requests  # Библиотека для обращения к серве�
 import bs4 as bs  # Модуль для парсинга HTML
 import pandas as pd  # Библиотка для работы с информацией в виде ДатаФреймов (DataFrame)
 from datetime import datetime  # Модуль для работы с датой и временем
-
+from itertools import groupby
 
 class PageParser:
     """
@@ -80,7 +80,7 @@ class PageParser:
                 last_pass = (iterations == len(self.rows) - 1)  # Проверка не в последний ли раз мы проходим
 
                 # В случае, если мы попадаем на строку вида -, Группа1, Группа2. Тут происходит сохранение информации
-                if split_row[0].text == ' ' and len(split_row[1].text) != 0:
+                if split_row[0].text in [' ', ''] and len(split_row[1].text) != 0:
                     # Формируем из словарей объекты типа DataFrame
                     first_group_df = pd.DataFrame(first_group)
                     second_group_df = pd.DataFrame(second_group)
@@ -130,6 +130,9 @@ class PageParser:
                         second_group_subject = split_row[4].textt  # Предмет для 2 группы
                         second_group_auditorium = split_row[5].text  # Получаем аудиторию для 2 группы
 
+                        if first_group_subject == " / ":
+                            first_group_subject = " "
+
                         # Наполняем словарь 1 группы данными из строки:
                         first_group[' '].append(hour)
                         first_group['Предмет'].append(first_group_subject)
@@ -148,6 +151,9 @@ class PageParser:
                         second_group_subject = split_row[3].text + " / " + split_row[4].text  # Получаем практики
                         second_group_auditorium = split_row[5].text  # Получаем аудиторию для 2 группы
 
+                        if second_group_subject == " / ":
+                            second_group_subject = " "
+
                         # Наполняем словарь 1 группы данными из строки:
                         first_group[' '].append(hour)
                         first_group['Предмет'].append(first_group_subject)
@@ -165,6 +171,12 @@ class PageParser:
                     first_group_auditorium = split_row[3].text  # Получаем аудиторию для 1 группы
                     second_group_subject = split_row[4].text + " / " + split_row[5].text  # Предмет для 2 группы
                     second_group_auditorium = split_row[6].text  # Получаем аудиторию для 2 группы
+                    
+                    # Удаляем пустые строки, если таковые имеются
+                    if first_group_subject == " / ":
+                        first_group_subject = " "
+                    if second_group_subject == " / ":
+                        second_group_subject = " "
 
                     # Наполняем словарь 1 группы данными из строки:
                     first_group[' '].append(hour)
@@ -224,6 +236,10 @@ class PageParser:
                         self.groups.append(split_row[1].text)
                     if len(split_row[2].text) > 0 and split_row[2].text not in conf.empty_strings:
                         self.groups.append(split_row[2].text)
+            
+            # Удаление дубликатов в списке групп
+            self.groups = [el for el, _ in groupby(self.groups)]
+
             return self.groups  # Возвращаем список всех групп
 
         # Если парсим страницу с расписанием для строительного отделения
@@ -231,19 +247,32 @@ class PageParser:
             # --- Формирование списка групп ---
             for i in range(len(self.rows) - 1):
                 split_row = self.rows[i].find_all('td')  # Разбиваем строку на отдельные столбцы
-
+                
                 # Это необходимо в случае, если в разметке такая ошибка: https://wampi.ru/image/6VyjX4k
                 # Т.е. пропущен номер часа
                 next_split_row = self.rows[i + 1].find_all('td')  # Получаем столбцы следующей строки
 
                 # Если попадаем на строку вида -, Группа1, Кабинет1, Группа2, Кабинет2 и в следующей строке находится
                 # расписание
-                if split_row[0].text in conf.empty_strings and next_split_row[0].text not in conf.empty_strings:
-                    # Добавляем группу в список всех групп в формате без номера курса
-                    if len(split_row[1].text) > 0 and split_row[1].text not in conf.empty_strings:
-                        self.groups.append(split_row[1].text.split(' ')[0])
-                    if len(split_row[3].text) > 0 and split_row[3].text not in conf.empty_strings:
-                        self.groups.append(split_row[3].text.split(' ')[0])
+                try:
+                    if split_row[0].text in conf.empty_strings and next_split_row[0].text not in conf.empty_strings:
+                        # Добавляем группу в список всех групп в формате без номера курса
+                        if len(split_row[1].text) > 0 and split_row[1].text not in conf.empty_strings:
+                            self.groups.append(split_row[1].text.split(' ')[0])
+                        if len(split_row[3].text) > 0 and split_row[3].text not in conf.empty_strings:
+                            self.groups.append(split_row[3].text.split(' ')[0])
+                except IndexError:
+                    if split_row[0].text in conf.empty_strings and next_split_row[0].text not in conf.empty_strings:
+                        # Добавляем группу в список всех групп в формате без номера курса
+                        group_name_1 = split_row[1].text.split(" ")[0]
+                        group_name_2 = split_row[2].text.split(" ")[0]
+                        if len(group_name_1) > 0 and group_name_1 not in conf.empty_strings:
+                            self.groups.append(group_name_1)
+                        if len(group_name_2) > 0 and group_name_2 not in conf.empty_strings:
+                            self.groups.append(group_name_2)
+
+            # Удаление дубликатов в списке групп
+            self.groups = [el for el, _ in groupby(self.groups)]
 
             return self.groups  # Возвращаем список всех групп
 
@@ -265,20 +294,27 @@ class PageParser:
         for schedule in self.schedule:
             # Перебираем все предметы и индексы строк
             for subject, hour, auditory in zip(schedule["Предмет"], schedule.index, schedule["Аудитория"]):
+                if subject is None:
+                    schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
+                    continue
                 # Если длина строки меньше или равна двойки, то в ней нет данных.
-                if len(subject) <= 2 or (subject == "  /  ") \
+                if len(subject) <= 2 or (subject == "  /  ")\
                     or (subject in conf.empty_strings) or ("———" in subject) or ("___" in subject):
 
                     if len(auditory) >= 2:
                         continue
 
                     schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
+                
 
         # Удаляем разрывы строк в расписниях
         for schedule in self.schedule:
             for i in range(len(schedule["Предмет"]) - 1):
                 if "\n" in schedule["Предмет"][i]:
                     schedule["Предмет"][i] = schedule["Предмет"][i].replace("\n", "")
+                if "/" in schedule["Предмет"][i]:
+                    schedule["Предмет"][i] = schedule["Предмет"][i].replace("/", "")
+
 
         # Удалить все пустые датафреймы
         for i in range(len(self.schedule) - 1):
