@@ -6,7 +6,7 @@ from data import config
 import pymysql
 import asyncio
 
-bot = Bot(token=config.BOT_TOKEN, parse_mode=types.PcarseMode.HTML, connections_limit=50)
+bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML, connections_limit=50)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
