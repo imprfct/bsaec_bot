@@ -292,28 +292,37 @@ class PageParser:
 
         # Удаляем пустые строки в датафреймах
         for schedule in self.schedule:
+            groups_len = schedule.index
+            last_filled_schedule = 0 
+
+            for counter, subject in enumerate(schedule["Предмет"], start=1):
+                
+                if subject is None or len(subject) <= 2 or (subject == "  /  ")\
+                    or (subject in conf.empty_strings) or ("———" in subject)\
+                        or ("___" in subject):
+                        continue
+                
+                last_filled_schedule = counter
+            
             # Перебираем все предметы и индексы строк
-            for subject, hour, auditory in zip(schedule["Предмет"], schedule.index, schedule["Аудитория"]):
+            for subject, hour, auditory in zip(schedule["Предмет"], groups_len, schedule["Аудитория"]):
+                if hour not in conf.empty_strings:
+                    hour_number = int(hour[0])
+
                 if subject is None:
-                    schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
+                    if hour_number > last_filled_schedule:
+                        schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
                     continue
-                # Если длина строки меньше или равна двойки, то в ней нет данных.
+
+                # Если длина строки меньше или равна двух, то в ней нет данных.
                 if len(subject) <= 2 or (subject == "  /  ")\
                     or (subject in conf.empty_strings) or ("———" in subject) or ("___" in subject):
 
                     if len(auditory) >= 2:
                         continue
 
-                    schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
-                
-
-        # Удаляем разрывы строк в расписниях
-        for schedule in self.schedule:
-            for i in range(len(schedule["Предмет"]) - 1):
-                if "\n" in schedule["Предмет"][i]:
-                    schedule["Предмет"][i] = schedule["Предмет"][i].replace("\n", "")
-                if "/" in schedule["Предмет"][i]:
-                    schedule["Предмет"][i] = schedule["Предмет"][i].replace("/", "")
+                    if hour_number > last_filled_schedule:
+                        schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
 
 
         # Удалить все пустые датафреймы
@@ -329,7 +338,17 @@ class PageParser:
                 Такое случается в случае, если на странице небольшая проблема с разметкой,
                 Пропуская ошибку, мы не влияем на ход программы и результат 
                 """
-                continue
+                continue    
+
+        # Удаляем разрывы строк в расписниях
+        for schedule in self.schedule:
+            for i in range(len(schedule["Предмет"]) - 1):
+                if schedule["Предмет"][i] is None:
+                    schedule["Предмет"][i] = ""
+                if "\n" in schedule["Предмет"][i]:
+                    schedule["Предмет"][i] = schedule["Предмет"][i].replace("\n", "")
+                if "/" in schedule["Предмет"][i]:
+                    schedule["Предмет"][i] = schedule["Предмет"][i].replace("/", "")
 
 
 class HomePagesParser:
