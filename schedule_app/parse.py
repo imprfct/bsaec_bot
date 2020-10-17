@@ -207,7 +207,7 @@ class PageParser:
                 iterations += 1
         # [DEBUG] В случае ошибки, можно отследить что произошло и на какой странице
         except Exception as exc:
-            print(exc.args[0] + self.url)
+            print(exc.args[0] + " " + self.url)
 
         self.drop_null()  # Выкидываем пустые датафреймы и пустые строки в датафреймах
 
@@ -322,7 +322,10 @@ class PageParser:
                         continue
 
                     if hour_number > last_filled_schedule:
-                        schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
+                        try:
+                            schedule.drop([hour], inplace=True)  # Удаляем строку из датафрейма
+                        except KeyError:
+                            continue
 
 
         # Удалить все пустые датафреймы
@@ -386,27 +389,26 @@ class HomePagesParser:
                 for article in articles:
                     split_a = article.find("a").text.split(" ")  # Делим строку для удобства
                     if "buh-otdel" in page.url:  # Если парсим страницу бух.отдела
-                        try:
-                            dates_and_links["date"].append((datetime.strptime(split_a[0], "%d.%m.%Y")))
-                        except IndexError:
-                            print("На странице " + url + " обнаружена ошибка в разметке. Ошибка содержится в дне, "
-                                                         "который был добавлен "
-                                  + article.find("time").text + ". В качестве дня будет использоваться первый элемент")
-                            dates_and_links["date"].append((datetime.strptime(split_a[0], "%d.%m.%Y")))
+                            for splits in split_a:
+                                try:
+                                    dates_and_links["date"].append((datetime.strptime(splits, "%d.%m.%Y")))
+                                    break
+                                except Exception:
+                                    continue
 
                     elif "stroi-otdel" in page.url:  # Если парсим страницу стр.отдела
-                        try:
-                            dates_and_links["date"].append((datetime.strptime(split_a[2], "%d.%m.%Y")))
-                        except IndexError:
-                            dates_and_links["date"].append((datetime.strptime(split_a[0], "%d.%m.%Y")))
-                        except ValueError:
-                            # Пример такой ошибки строка - `Расписание на 11 июня 2020`
-                            try:
-                                dates_and_links["date"].append((datetime.strptime(split_a[2] + "." + 
-                                                conf.monthes[split_a[3]] + "." + split_a[4], "%d.%B.%Y")))
-                            except KeyError:
-                                # Пример - Расписание занятий на 30.06.2020г. (вторник)
-                                dates_and_links["date"].append(datetime.strptime(split_a[3][:-2], "%d.%m.%Y"))
+                            for splits in split_a:
+                                try:
+                                    dates_and_links["date"].append((datetime.strptime(splits, "%d.%m.%Y")))
+                                    break
+                                except ValueError:
+                                    try:
+                                        dates_and_links["date"].append((datetime.strptime(split_a[2] + "." + 
+                                                        conf.monthes[split_a[3]] + "." + split_a[4], "%d.%B.%Y")))
+                                    except Exception:
+                                        continue
+                                except Exception:
+                                    continue;
 
                     dates_and_links["href"].append(article.find("a").get("href"))  # Добавляем ссылку на расписание
 
