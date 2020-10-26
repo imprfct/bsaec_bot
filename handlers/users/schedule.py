@@ -73,10 +73,12 @@ async def schedule_step_3(query, state:FSMContext):
         # переводим название дня недели с анг. на русский
         weekday = weekdays[requested_date.strftime("%A")]
         
-        buh_url = f"http://bgaek.by/{day}-{month}-{year}-{weekday}/"
+        buh_url_1 = f"http://bgaek.by/{day}-{month}-{year}-{weekday}/"
+        buh_url_2 = f"http://bgaek.by/расписание-занятий-на-{day}-{month}-{year}-{weekday}/"
+
         str_url_1 = f"http://bgaek.by/расписание-на-{day}-{month}-{year}-{weekday}"
         str_url_2 = f"http://bgaek.by/{day}-{month}-{year}-{weekday}-2/"
-        urls =  [buh_url, str_url_1, str_url_2]
+        urls =  [buh_url_1, buh_url_2, str_url_1, str_url_2]
 
         async with state.proxy() as data:
             data['date'] = result
@@ -117,7 +119,7 @@ async def schedule_step_3(query, state:FSMContext):
             await state.finish()
         
         elif mode == 1:
-            groups = get_groups([buh_url, str_url_1, str_url_2])
+            groups = get_groups([buh_url_1, buh_url_2, str_url_1, str_url_2])
             if groups == list():
                 await bot.edit_message_text(f"На сайте нет расписания на {str(result)} 😅",
                                 query.message.chat.id,

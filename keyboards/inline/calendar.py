@@ -9,7 +9,6 @@ rus_translation_days_of_week = ['Пн', 'Вт', 'Ср',
                                 'Чт', 'Пт', 'Сб', 'Вс']
 
 MIN_DATE = date(2020, 1, 1)
-MAX_DATE = date.today() + timedelta(days=3)
 
 
 class Calendar(DetailedTelegramCalendar):
@@ -17,7 +16,7 @@ class Calendar(DetailedTelegramCalendar):
         super().__init__(**kwargs)
 
         self.min_date = MIN_DATE
-        self.max_date = MAX_DATE
+        self.max_date = date.today() + timedelta(days=3)
 
         if date.today().year == self.min_date.year:
             self.first_step = MONTH

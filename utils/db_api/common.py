@@ -76,10 +76,7 @@ def get_students_groups():
 
 
 def schedule_saved_in_bd(date: date, group: str):
-    if platform.startswith("windows"):
-        path_to_file = f"{img_path}/{date.year}_{date.month}_{date.day}_{group}.jpg"
-    else:
-        path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
+    path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
     
     con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
     with con.cursor() as cursor:

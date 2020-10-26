@@ -141,6 +141,7 @@ def download_day_for_group(user_who_requested, urls, req_date: date, group):
                 dfToImage.get_image(data=schedule,
                                     path=os.path.join(img_path, f"{year}_{month}_{day}_{group}"),
                                     requested_from=user_who_requested)
+                print(os.path.join(img_path, f"{year}_{month}_{day}_{group}"))
                 return True
     except Exception:
         return False

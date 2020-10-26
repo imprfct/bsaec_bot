@@ -15,7 +15,7 @@ admins = ["504242356"]
 spam_account = ["1397240963"]
 
 if platform.startswith("linux"):
-    img_path = os.path.join(os.getcwd(), "data/Schedule/")
+    img_path = os.path.join(os.getcwd(), "data/Schedule")
 else:
     img_path = "./data/Schedule"
 

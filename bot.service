@@ -1,0 +1,15 @@
+[Unit]
+Description=BSAEC_BOT
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=imprfct
+WorkingDirectory= /home/imprfct/bsaec_bot/
+ExecStart=python /home/imprfct/bsaec_bot/app.py
+RestartSec=10
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
