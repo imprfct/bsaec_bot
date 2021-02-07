@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 
 from data import config
 import pymysql
+import sqlite3
 import asyncio
 
 bot = Bot(token=config.BOT_TOKEN, parse_mode=types.ParseMode.HTML, connections_limit=50)
@@ -13,9 +14,4 @@ dp = Dispatcher(bot, storage=storage)
 event_loop = asyncio.get_event_loop()
 
 # Подключение к БД
-con = pymysql.connect(host="localhost",
-                     user="root",
-                     password="8Ez7ENzj",
-                     db="bsaec_bot_db",
-                     charset='utf8',
-                     cursorclass=pymysql.cursors.DictCursor)
+con = sqlite3.connect("bsaec.db")

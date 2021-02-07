@@ -15,19 +15,18 @@ def registrate_student(chat_id: int, firstname: str, surname: str, group: str, s
     Функция для регистрации пользователя в БД
     """
     try:
-        con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-        with con.cursor() as cursor:
-            sql_reg = "INSERT INTO `bsaec_bot_db`.`students` "\
-                "(`chat_id`, `firstname`, `surname`, `group`, `specialization`, `regdate`) "\
-                f"VALUES('{chat_id}', '{firstname}', '{surname}', "\
-                f"'{group}', '{specialization}', '{datetime.now()}')"
+        cursor = con.cursor()
+        sql_reg = "INSERT INTO `students` "\
+            "(`chat_id`, `firstname`, `surname`, `group`, `specialization`, `regdate`) "\
+            f"VALUES('{chat_id}', '{firstname}', '{surname}', "\
+            f"'{group}', '{specialization}', '{datetime.now()}')"
 
-            cursor.execute(sql_reg)
-            con.commit()    # Подтверждаем внесенные изменения
-            
-            logging.info(f"Добавлен новый пользователь в чат - {chat_id}, группа - {group}, имя - {firstname} {surname}")
-            
-            return True
+        cursor.execute(sql_reg)
+        con.commit()    # Подтверждаем внесенные изменения
+
+        logging.info(f"Добавлен новый пользователь в чат - {chat_id}, группа - {group}, имя - {firstname} {surname}")
+
+        return True
     except pymysql.err.IntegrityError as exc:
         print(exc)
         return False

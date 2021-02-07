@@ -5,10 +5,8 @@
 
 import os
 import asyncio
-import pymysql
 from loader import bot, con
 from data.config import admins, spam_account
-from schedule_app.conf import folder_path
 from utils.db_api.common import get_students_groups
 from datetime import date
 
@@ -37,9 +35,9 @@ async def upload_and_send_schedule(path, method, file_attr, requested_from):
 
         try:
             # Загрузка файла в БД
-            with con.cursor() as cursor:
-                cursor.execute(
-                    f"INSERT INTO `bsaec_bot_db`.`media` (`file_id`, `filename`) VALUES ('{file_id}', '{path}');")
+            cursor = con.cursor()
+            cursor.execute(
+                f"INSERT INTO `media` (`file_id`, `filename`) VALUES ('{file_id}', '{path}');")
             con.commit()    # Подтверждаем изменения
         except Exception as e:
             print(
@@ -128,9 +126,9 @@ async def uploadMediaFiles(folder, method, file_attr):
 
             try:
                 # Загрузка файла в БД
-                with con.cursor() as cursor:
-                    cursor.execute(
-                        f"INSERT INTO `bsaec_bot_db`.`media` (`file_id`, `filename`) VALUES ('{file_id}', '{os.path.join(folder_path, filename)}');")
+                cursor = con.cursor()
+                cursor.execute(
+                    f"INSERT INTO `media` (`file_id`, `filename`) VALUES ('{file_id}', '{os.path.join(folder_path, filename)}');")
                 con.commit()
             except Exception as e:
                 print(

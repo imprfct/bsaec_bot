@@ -3,21 +3,17 @@
 """
 
 import os
-import pymysql
 from loader import con
 from datetime import date
 from data.config import img_path
-from sys import platform
-import logging
 
 
 def truncate_media_table():
     """
     Полноcmью очистить таблицу с media
     """
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        cursor.execute("TRUNCATE TABLE `media`;")
+    cursor = con.cursor()
+    cursor.execute("TRUNCATE TABLE `media`;")
         
     con.commit()
     return True
@@ -28,27 +24,25 @@ def student_registrated(chat_id: int):
     Проверка, зарегистрирован ли пользователь, если
     зарегистрирован, то вернет True, иначе False
     """
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        cursor.execute(f"SELECT * FROM students WHERE chat_id = {chat_id};")
-        if cursor.fetchone() is not None:
-            return True
-        else:
-            return False
+    cursor = con.cursor()
+    cursor.execute(f"SELECT * FROM students WHERE chat_id = {chat_id};")
+    if cursor.fetchone() is not None:
+        return True
+    else:
+        return False
 
 
 def get_student_group(chat_id: int):
     """
     Получение группы учащегося из БД
     """
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        cursor.execute(
-            f"SELECT `group` from students WHERE chat_id = {chat_id};")
+    cursor = con.cursor()
+    cursor.execute(
+        f"SELECT `group` from students WHERE chat_id = {chat_id};")
 
-        result = cursor.fetchone()
+    result = cursor.fetchone()
 
-        return result['group']
+    return result[0]
 
 
 def get_students_groups():
@@ -58,19 +52,18 @@ def get_students_groups():
     """
     result = dict()
 
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        select_sql = "SELECT `chat_id`, `group` FROM students;"
-        cursor.execute(select_sql)
+    cursor = con.cursor()
+    select_sql = "SELECT `chat_id`, `group` FROM students;"
+    cursor.execute(select_sql)
 
-        for row in cursor.fetchall():
-            group = row['group']
-            chat_id = row['chat_id']
+    for row in cursor.fetchall():
+        group = row['group']
+        chat_id = row['chat_id']
 
-            if group not in result:
-                result[group] = list()
+        if group not in result:
+            result[group] = list()
 
-            result[group].append(chat_id)
+        result[group].append(chat_id)
 
     return result
 
@@ -78,23 +71,21 @@ def get_students_groups():
 def schedule_saved_in_bd(date: date, group: str):
     path_to_file = os.path.join(img_path, f"{date.year}_{date.month}_{date.day}_{group}.jpg")
     
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
-        cursor.execute(sql)
-        response = cursor.fetchall()
+    cursor = con.cursor()
+    sql = f'SELECT * from `media` WHERE `filename` = "{path_to_file}";'
+    cursor.execute(sql)
+    response = cursor.fetchall()
 
-        if response is None or response == list() or response == tuple():
-            return None
-        else:
-            return response[-1]['file_id']
+    if response is None or response == list() or response == tuple():
+        return None
+    else:
+        return response[-1][0]
 
 
 def get_mode_by_chat_id(chat_id: str):
-    con.ping(reconnect=True)    # Проверяем живо ли соединение с БД
-    with con.cursor() as cursor:
-        cursor.execute(f"SELECT `specialization` FROM `students` WHERE `chat_id`='{chat_id}';")
-        specialization = cursor.fetchone()['specialization']
+    cursor = con.cursor()
+    cursor.execute(f"SELECT `specialization` FROM `students` WHERE `chat_id`='{chat_id}';")
+    specialization = cursor.fetchone()['specialization']
     
     # Согласно специализациям, установленным в data/groups_and_specialities.py
     if specialization <= 1:

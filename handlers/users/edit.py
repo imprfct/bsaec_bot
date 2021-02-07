@@ -105,7 +105,7 @@ async def bot_start_step_3(message: types.Message, state: FSMContext):
     surname = message.chat.last_name
     async with state.proxy() as data:
         speciality_text = data['specialization']
-        regdate = data['regdate']['regdate']
+        regdate = data['regdate'][0]
     speciality = encrypted_specialities[speciality_text]
     group = message.text
 
