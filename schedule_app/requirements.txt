@@ -3,5 +3,5 @@ PyMySQL==0.9.3
 imgkit==1.0.2
 pandas==1.0.3
 beautifulsoup4==4.9.1
-cryptography==2.9.2
+cryptography==3.3.2
 lxml==4.5.1
