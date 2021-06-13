@@ -8,11 +8,11 @@ from sys import platform
 #     os.getenv("ADMIN_ID"),
 # ]
 
-BOT_TOKEN = "1339117782:AAGnpZZZqY8HQ6iY4IZEHevdULzThuWqPY4"
+BOT_TOKEN = "1897251689:AAHbthQS_mSBegNAp0_PUHH9BdfmSoAvkyc"
 
 admins = ["504242356"]
 
-spam_account = ["1397240963"]
+spam_account = ["504242356"]
 
 if platform.startswith("linux"):
     img_path = os.path.join(os.getcwd(), "data/Schedule")
